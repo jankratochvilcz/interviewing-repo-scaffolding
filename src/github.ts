@@ -10,28 +10,23 @@ export type GitHubConfiguration = {
 const getClient = (configuration: GitHubConfiguration) =>
   new Octokit({
     auth: configuration.token,
-    userAgent: "Interviewing Repo Scaffolding",
-    baseUrl: "https://api.github.com",
   });
 
 export const createRepo = async (
   name: string,
   configuration: GitHubConfiguration
-) => {
+): Promise<{ url: string }> => {
   const client = getClient(configuration);
-  
-  await client.repos.createInOrg({
+
+  const createdRepo = await client.repos.createForAuthenticatedUser({
     org: configuration.organization,
     name,
+    has_issues: true,
   });
 
-  const repoWithUpdatedDefaultBranch = await client.repos.update({
-    repo: name,
-    owner: configuration.organization,
-    default_branch: configuration.defaultBranch,
-  })
-
-  return repoWithUpdatedDefaultBranch;
+  return {
+    url: createdRepo.data.ssh_url,
+  };
 };
 
 export const createIssue = async (
@@ -62,7 +57,7 @@ export const createPull = async (
     title: template.title,
     body: template.content,
     base: configuration.defaultBranch,
-    head: template.branch
+    head: template.branch,
   });
 
   return issue;
