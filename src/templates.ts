@@ -9,6 +9,9 @@ export type Template = {
   content: string;
 };
 
+export type IssueTemplate = Omit<Template, "type" | "branch">
+export type PullTemplate = Required<Omit<Template, "type">>
+
 export const parseTemplate = (templateString: string): Template => {
   const parsed = matter(templateString);
   const title = parsed.data["title"];
