@@ -1,7 +1,7 @@
 class GitHubClient {
-    readonly token: string
-    
-    constructor(token: string) {
-        this.token = token
-    }
+  readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
 }

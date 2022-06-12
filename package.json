@@ -8,7 +8,9 @@
     "start": "npm run build && node build/main.js",
     "test": "ava",
     "lint:check": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format:check": "prettier . --check",
+    "format:fix": "prettier . --write"
   },
   "keywords": [],
   "author": "Jan Kratochvil",
@@ -19,6 +21,7 @@
     "@typescript-eslint/parser": "^5.27.1",
     "ava": "^4.3.0",
     "eslint": "^8.17.0",
+    "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
     "ts-node": "^10.8.1",
     "typescript": "^4.7.3"
