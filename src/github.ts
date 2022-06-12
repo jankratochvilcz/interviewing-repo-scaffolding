@@ -15,7 +15,7 @@ const getClient = (configuration: GitHubConfiguration) =>
 export const createRepo = async (
   name: string,
   configuration: GitHubConfiguration
-): Promise<{ url: string }> => {
+): Promise<{ url: string; htmlUrl: string }> => {
   const client = getClient(configuration);
 
   const createdRepo = await client.repos.createForAuthenticatedUser({
@@ -26,6 +26,7 @@ export const createRepo = async (
 
   return {
     url: createdRepo.data.ssh_url,
+    htmlUrl: createdRepo.data.html_url,
   };
 };
 

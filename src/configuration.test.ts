@@ -1,20 +1,20 @@
-import test from "ava"
-import { getGitHubConfiguration } from "./configuration"
+import test from "ava";
+import { getGitHubConfiguration } from "./configuration";
 
 test.beforeEach((t) => {
-    process.env["GITHUB_TOKEN"] = ""
-    process.env["DEFAULT_BRANCH"] = ""
-    process.env["ORGANIZATION_NAME"] = ""
-})
+  process.env["GITHUB_TOKEN"] = "";
+  process.env["DEFAULT_BRANCH"] = "";
+  process.env["ORGANIZATION_NAME"] = "";
+});
 
-test('loads GitHub configuration', t => {
-    process.env["GITHUB_TOKEN"] = "token"
-    process.env["DEFAULT_BRANCH"] = "branch"
-    process.env["ORGANIZATION_NAME"] = "org"
+test("loads GitHub configuration", (t) => {
+  process.env["GITHUB_TOKEN"] = "token";
+  process.env["DEFAULT_BRANCH"] = "branch";
+  process.env["ORGANIZATION_NAME"] = "org";
 
-    const actual = getGitHubConfiguration()
+  const actual = getGitHubConfiguration();
 
-    t.is(actual.defaultBranch, 'branch')
-    t.is(actual.organization, 'org')
-    t.is(actual.token, 'token')
-})
+  t.is(actual.defaultBranch, "branch");
+  t.is(actual.organization, "org");
+  t.is(actual.token, "token");
+});
