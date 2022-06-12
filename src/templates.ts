@@ -25,7 +25,7 @@ export const parseTemplate = (templateString: string): Template => {
         
     }
 
-    var type: TemplateType
+    let type: TemplateType
     switch (parsed.data["type"]) {
         case "issue":
             type = "issue"
