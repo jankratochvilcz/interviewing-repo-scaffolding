@@ -111,6 +111,10 @@ const main = async (candidateUsername: string) => {
           console.log(pushResult.error)
         }
 
+        if(!pushResult.isError) {
+          console.log(pushResult.message)
+        }
+
         await executeWithGitInRepo(["checkout", configuration.defaultBranch], "main")
       }
     }
