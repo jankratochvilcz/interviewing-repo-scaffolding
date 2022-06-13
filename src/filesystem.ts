@@ -7,7 +7,7 @@ export type TemplateFile = {
 };
 
 export const localPaths = {
-  buildFolder: "/build",
+  buildFolder: "build",
   buildSrcFolder: "/src",
   templatesFolder: "/templates",
   templatesSrcFolder: "/src",
