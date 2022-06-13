@@ -43,6 +43,6 @@ Copy the `.env.example` file as `.env` and fill in individual environment variab
 
 ### 5. Run it
 
-Finally, run the tool via `npm run start` to generate the repository and invite your candidate to it.
+Finally, run the tool via `npm run start` and follow the instructions to generate the repository and invite your candidate to it.
 
 If you haven't run it before, don't forget to `npm install`. The project assumes you have Node and NPM installed. The tested version is Node v18.3.0 and NPM v8.11.0.
