@@ -69,6 +69,6 @@ export const copyFolderRecursive = (source: string, target: string) => {
 };
 
 export const clearFolderRecursive = (path: string) => {
-  fs.rmSync(path, {recursive: true, force: true})
-  mkdir(path)
-}
+  fs.rmSync(path, { recursive: true, force: true });
+  mkdir(path);
+};

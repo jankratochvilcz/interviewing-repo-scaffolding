@@ -1,12 +1,23 @@
 import { getGitHubConfiguration } from "./configuration";
-import { clearFolderRecursive, copyFolderRecursive, getTemplateFiles, mkdir } from "./filesystem";
+import readline from "readline";
+import {
+  clearFolderRecursive,
+  copyFolderRecursive,
+  getTemplateFiles,
+  mkdir,
+} from "./filesystem";
 import {
   createIssue,
   createPull,
   createRepo,
   GitHubConfiguration,
 } from "./github";
-import { IssueTemplate, parseTemplate, PullTemplate, Template } from "./templates";
+import {
+  IssueTemplate,
+  parseTemplate,
+  PullTemplate,
+  Template,
+} from "./templates";
 import dotenv from "dotenv";
 import { executeWithGitInRepo } from "./git";
 
@@ -29,7 +40,7 @@ const executeWorkflowStep = async <TOutput>(
   return result;
 };
 
-const main = async (candidateUsername: string) => {
+const createRepoWorkflow = async (candidateUsername: string) => {
   const diff = await executeWorkflowStep(
     "Checking local repository",
     async () => await executeWithGitInRepo(["diff", "HEAD"], "main")
@@ -79,43 +90,57 @@ const main = async (candidateUsername: string) => {
     )
   );
 
-  const issues = templates.filter(x => x.type === "issue")
+  const issues = templates.filter((x) => x.type === "issue");
 
   await executeWorkflowStep(
     `Creating ${issues.length} issues from templates`,
     async () => await createIsses(issues, candidateUsername, configuration)
   );
 
-  const pulls = templates.filter(x => x.type === "pull_request").map(x => x as PullTemplate)
+  const pulls = templates
+    .filter((x) => x.type === "pull_request")
+    .map((x) => x as PullTemplate);
 
   await executeWorkflowStep(
     `Pushing ${pulls.length} PR branches to origin`,
     async () => {
       for (const pull of pulls) {
-        const { branch, title } = pull
+        const { branch, title } = pull;
 
-        console.log(`${branch} [${title}]`)
+        console.log(`${branch} [${title}]`);
 
-        clearFolderRecursive("build/templates/src")
+        clearFolderRecursive("build/templates/src");
 
-        await executeWithGitInRepo(["clone", "git@github.com:jankratochvilcz/testrepo.git", "."]);
-        await executeWithGitInRepo(["checkout", "-b", branch], "templates")
-        await executeWithGitInRepo(["checkout", branch], "main")
+        await executeWithGitInRepo([
+          "clone",
+          "git@github.com:jankratochvilcz/testrepo.git",
+          ".",
+        ]);
+        await executeWithGitInRepo(["checkout", "-b", branch], "templates");
+        await executeWithGitInRepo(["checkout", branch], "main");
 
-        copyFolderRecursive("templates/src", "build/templates")
+        copyFolderRecursive("templates/src", "build/templates");
 
-        await executeWithGitInRepo(["add", "-A"], "templates")
-        await executeWithGitInRepo(["commit", "-m", title], "templates")
-        await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
+        await executeWithGitInRepo(["add", "-A"], "templates");
+        await executeWithGitInRepo(["commit", "-m", title], "templates");
+        await executeWithGitInRepo(
+          ["push", "-u", "origin", branch],
+          "templates"
+        );
 
-        await createPull(pull, candidateUsername, configuration)
+        await createPull(pull, candidateUsername, configuration);
 
-        await executeWithGitInRepo(["checkout", configuration.defaultBranch], "main")
+        await executeWithGitInRepo(
+          ["checkout", configuration.defaultBranch],
+          "main"
+        );
       }
     }
-  )
+  );
 
   console.log(`Done! See repo at ${htmlUrl}`);
+
+  showPrompt();
 };
 
 const createIsses = async (
@@ -128,7 +153,11 @@ const createIsses = async (
 
     switch (template.type) {
       case "issue":
-        await createIssue(template as IssueTemplate, candidateUsername, configuration);
+        await createIssue(
+          template as IssueTemplate,
+          candidateUsername,
+          configuration
+        );
         break;
       case "pull_request":
         if (!branch) {
@@ -136,7 +165,7 @@ const createIsses = async (
         }
         await createPull(
           {
-            ...template as PullTemplate,
+            ...(template as PullTemplate),
             branch,
           },
           candidateUsername,
@@ -151,4 +180,20 @@ const createIsses = async (
 
 dotenv.config();
 
-void main("testrepo");
+const lineReader = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+const showPrompt = () => {
+  console.log("Enter a candidate username or press Enter to terminate");
+  lineReader.question("Candidate's GitHub username: ", (name) => {
+    lineReader.close();
+
+    if (name) {
+      createRepoWorkflow(name);
+    }
+  });
+};
+
+showPrompt();
