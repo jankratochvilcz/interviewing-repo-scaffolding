@@ -25,13 +25,6 @@ export const createRepo = async (
     
   });
 
-  await client.repos.addCollaborator({
-    owner: configuration.organization,
-    username: "jankratochvilcz",
-    repo: name,
-    permissions: "admin"
-  })
-
   console.log(createdRepo)
 
   return {
