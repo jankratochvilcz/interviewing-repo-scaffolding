@@ -101,42 +101,45 @@ const createRepoWorkflow = async (candidateUsername: string) => {
     .filter((x) => x.type === "pull_request")
     .map((x) => x as PullTemplate);
 
-  await executeWorkflowStep(
-    `Pushing ${pulls.length} PR branches to origin`,
-    async () => {
-      for (const pull of pulls) {
-        const { branch, title } = pull;
+  try {
+    await executeWorkflowStep(
+      `Pushing ${pulls.length} PR branches to origin`,
+      async () => {
+        for (const pull of pulls) {
+          const { branch, title } = pull;
 
-        console.log(`${branch} [${title}]`);
+          console.log(`${branch} [${title}]`);
 
-        clearFolderRecursive("build/templates/src");
+          clearFolderRecursive("build/templates/src");
 
-        await executeWithGitInRepo([
-          "clone",
-          "git@github.com:jankratochvilcz/testrepo.git",
-          ".",
-        ]);
-        await executeWithGitInRepo(["checkout", "-b", branch], "templates");
-        await executeWithGitInRepo(["checkout", branch], "main");
+          await executeWithGitInRepo([
+            "clone",
+            "git@github.com:jankratochvilcz/testrepo.git",
+            ".",
+          ]);
+          await executeWithGitInRepo(["checkout", "-b", branch], "templates");
+          await executeWithGitInRepo(["checkout", branch], "main");
 
-        copyFolderRecursive("templates/src", "build/templates");
+          copyFolderRecursive("templates/src", "build/templates");
 
-        await executeWithGitInRepo(["add", "-A"], "templates");
-        await executeWithGitInRepo(["commit", "-m", title], "templates");
-        await executeWithGitInRepo(
-          ["push", "-u", "origin", branch],
-          "templates"
-        );
+          await executeWithGitInRepo(["add", "-A"], "templates");
+          await executeWithGitInRepo(["commit", "-m", title], "templates");
+          await executeWithGitInRepo(
+            ["push", "-u", "origin", branch],
+            "templates"
+          );
 
-        await createPull(pull, candidateUsername, configuration);
-
-        await executeWithGitInRepo(
-          ["checkout", configuration.defaultBranch],
-          "main"
-        );
+          await createPull(pull, candidateUsername, configuration);
+        }
       }
-    }
-  );
+    );
+  } finally {
+    // We always want to end in main or it becomes confusing UX
+    await executeWithGitInRepo(
+      ["checkout", configuration.defaultBranch],
+      "main"
+    );
+  }
 
   console.log(`Done! See repo at ${htmlUrl}`);
 
