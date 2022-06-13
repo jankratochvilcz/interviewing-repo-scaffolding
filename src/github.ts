@@ -30,6 +30,15 @@ export const createRepo = async (
   };
 };
 
+export const deleteRepo = async (name: string, configuration: GitHubConfiguration) => {
+  const client = getClient(configuration);
+
+  await client.repos.delete({
+    owner: configuration.organization,
+    repo: name,
+  });
+}
+
 export const createIssue = async (
   template: IssueTemplate,
   repo: string,

@@ -10,6 +10,7 @@ import {
   createIssue,
   createPull,
   createRepo,
+  deleteRepo,
   GitHubConfiguration,
 } from "./github";
 import {
@@ -142,8 +143,19 @@ const createRepoWorkflow = async (candidateUsername: string) => {
   }
 
   console.log(`Done! See repo at ${htmlUrl}`);
+};
 
-  showPrompt();
+const deleteRepoWorkflow = async (candidateUsername: string) => {
+  const configuration = await executeWorkflowStep("Getting configuration", () =>
+    Promise.resolve(getGitHubConfiguration())
+  );
+
+  await executeWorkflowStep(
+    `Deleting repository ${candidateUsername}/${configuration.organization}`,
+    async () => await deleteRepo(candidateUsername, configuration)
+  );
+
+  console.log("Done!");
 };
 
 const createIsses = async (
@@ -188,14 +200,31 @@ const showPrompt = () => {
     input: process.stdin,
     output: process.stdout,
   });
-  
-  console.log("Enter a candidate username or press Enter to terminate");
-  lineReader.question("Candidate's GitHub username: ", (name) => {
+
+  console.log(
+    "1. [username]        Write candidate name to generate a test repo."
+  );
+  console.log("2. [-D username] Delete a repo for a given candidate.");
+  console.log("3. [Enter]           Terminate tool.");
+  console.log();
+  console.log();
+
+  lineReader.question(": ", (param) => {
     lineReader.close();
 
-    if (name) {
-      createRepoWorkflow(name);
+    const paramLowercase = param.toLowerCase();
+
+    if (!paramLowercase) {
+      return;
     }
+
+    if (paramLowercase.startsWith("-D")) {
+      deleteRepoWorkflow(paramLowercase.slice(3));
+    } else {
+      createRepoWorkflow(param);
+    }
+
+    showPrompt();
   });
 };
 
