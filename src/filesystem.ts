@@ -8,8 +8,8 @@ export type TemplateFile = {
 
 export const localPaths = {
   buildFolder: "build",
-  buildSrcFolder: "/src",
-  templatesFolder: "/templates",
+  buildSrcFolder: "src",
+  templatesFolder: "templates",
   templatesSrcFolder: "/src",
   appRoot: __dirname,
 };
