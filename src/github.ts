@@ -22,7 +22,10 @@ export const createRepo = async (
     org: configuration.organization,
     name,
     has_issues: true,
+    
   });
+
+  console.log(createdRepo)
 
   return {
     url: createdRepo.data.ssh_url,

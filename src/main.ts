@@ -212,14 +212,12 @@ const showPrompt = () => {
   lineReader.question(": ", (param) => {
     lineReader.close();
 
-    const paramLowercase = param.toLowerCase();
-
-    if (!paramLowercase) {
+    if (!param) {
       return;
     }
 
-    if (paramLowercase.startsWith("-D")) {
-      deleteRepoWorkflow(paramLowercase.slice(3));
+    if (param.startsWith("-D")) {
+      deleteRepoWorkflow(param.slice(3));
     } else {
       createRepoWorkflow(param);
     }
