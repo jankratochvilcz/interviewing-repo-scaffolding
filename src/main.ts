@@ -12,6 +12,7 @@ import {
   createPull,
   createRepo,
   GitHubConfiguration,
+  inviteCollaborator,
 } from "./github";
 import {
   IssueTemplate,
@@ -22,6 +23,7 @@ import {
 import dotenv from "dotenv";
 import { executeWithGitInRepo } from "./git";
 import path from "path";
+import { connected } from "process";
 
 const remoteName = "origin";
 
@@ -154,6 +156,16 @@ const createRepoWorkflow = async (candidateUsername: string) => {
       "main"
     );
   }
+
+  await executeWorkflowStep(
+    `Inviting ${candidateUsername} to repo`,
+    async () =>
+      await inviteCollaborator(
+        candidateUsername,
+        candidateUsername,
+        configuration
+      )
+  );
 
   console.log(`Done! See repo at ${htmlUrl}`);
 };

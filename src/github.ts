@@ -32,6 +32,21 @@ export const createRepo = async (
   };
 };
 
+export const inviteCollaborator = async (
+  repo: string,
+  username: string,
+  configuration: GitHubConfiguration
+) => {
+  const client = getClient(configuration);
+
+  await client.repos.addCollaborator({
+    owner: configuration.organization,
+    repo,
+    username,
+    permissions: "push",
+  });
+};
+
 export const deleteRepo = async (
   name: string,
   configuration: GitHubConfiguration
