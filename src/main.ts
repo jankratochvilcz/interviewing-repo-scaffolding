@@ -30,6 +30,13 @@ const executeStep = async <TOutput>(
 };
 
 const main = async (candidateUsername: string) => {
+  const diff = await executeStep("Checking local repository", async () => await executeWithGitInRepo(["diff", "HEAD"], "main"))
+
+  if(diff.isError || diff.message.length > 0) {
+    console.log('Working tree is dirty. Clean working tree and try again.')
+    return
+  }
+
   await executeStep("Moving source to build folder", () => {
     mkdir("build/src");
     copyFolderRecursiveSync("templates", "build");
