@@ -98,8 +98,7 @@ const main = async (candidateUsername: string) => {
 
         clearFolderRecursive("build/templates/src")
 
-        await executeWithGitInRepo(["init"]);
-        await executeWithGitInRepo(["remote", "add", remoteName, url]);
+        await executeWithGitInRepo(["clone", "git@github.com:jankratochvilcz/testrepo.git", "."]);
         await executeWithGitInRepo(["checkout", "-b", branch], "templates")
         await executeWithGitInRepo(["checkout", branch], "main")
 
