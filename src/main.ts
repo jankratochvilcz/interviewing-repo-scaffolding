@@ -1,12 +1,12 @@
 import { getGitHubConfiguration } from "./configuration";
-import { copyFolderRecursiveSync, getTemplateFiles, mkdir } from "./filesystem";
+import { clearFolderRecursive, copyFolderRecursiveSync, getTemplateFiles, mkdir } from "./filesystem";
 import {
   createIssue,
   createPull,
   createRepo,
   GitHubConfiguration,
 } from "./github";
-import { parseTemplate } from "./templates";
+import { IssueTemplate, parseTemplate, PullTemplate, Template } from "./templates";
 import dotenv from "dotenv";
 import { executeWithGitInRepo } from "./git";
 
@@ -79,16 +79,44 @@ const main = async (candidateUsername: string) => {
     )
   );
 
+  const issues = templates.filter(x => x.type === "issue")
+
   await executeStep(
-    `Creating ${templates.length} issues/PRs from templates`,
-    async () => await createIsses(templates, candidateUsername, configuration)
+    `Creating ${issues.length} issues from templates`,
+    async () => await createIsses(issues, candidateUsername, configuration)
   );
+
+  const pulls = templates.filter(x => x.type === "pull_request")
+
+  await executeStep(
+    `Pushing ${pulls.length} PR branches to origin`,
+    async () => {
+      for (const pull of pulls) {
+        const { branch, title } = pull as PullTemplate
+
+        console.log(`${branch} [${title}]`)
+
+        clearFolderRecursive("build/templates/src")
+
+        await executeWithGitInRepo(["checkout", "-b", branch], "templates")
+        await executeWithGitInRepo(["checkout", branch], "main")
+
+        copyFolderRecursiveSync("templates/src", "build/templates")
+
+        await executeWithGitInRepo(["add", "-A"], "templates")
+        await executeWithGitInRepo(["commit", "-m", title], "templates")
+        await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
+
+        await executeWithGitInRepo(["checkout", configuration.defaultBranch], "main")
+      }
+    }
+  )
 
   console.log(`Done! See repo at ${htmlUrl}`);
 };
 
 const createIsses = async (
-  templates: import("/Users/jan/src/personal/interviewing-repo-scaffolding/src/templates").Template[],
+  templates: Template[],
   candidateUsername: string,
   configuration: GitHubConfiguration
 ) => {
@@ -97,7 +125,7 @@ const createIsses = async (
 
     switch (template.type) {
       case "issue":
-        await createIssue(template, candidateUsername, configuration);
+        await createIssue(template as IssueTemplate, candidateUsername, configuration);
         break;
       case "pull_request":
         if (!branch) {
@@ -105,7 +133,7 @@ const createIsses = async (
         }
         await createPull(
           {
-            ...template,
+            ...template as PullTemplate,
             branch,
           },
           candidateUsername,
