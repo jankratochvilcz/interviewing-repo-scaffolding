@@ -12,14 +12,19 @@ import { executeWithGitInRepo } from "./git";
 
 const remoteName = "origin";
 
+let stepNumber = 1
+
 const executeStep = async <TOutput>(
   name: string,
   toExecute: () => Promise<TOutput>
 ): Promise<TOutput> => {
-  console.log(`Start of: ${name}`);
+  const stepPrefix = `[${stepNumber}] ${name}: `
+  console.log(`${stepPrefix} Started.`);
   const result = await toExecute();
-  console.log(`${name} finished`);
+  console.log(`${stepNumber} Finished.`);
   console.log();
+
+  stepNumber++
 
   return result;
 };
@@ -104,4 +109,5 @@ const createIsses = async (
 };
 
 dotenv.config();
+
 void main("testrepo");
