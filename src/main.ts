@@ -103,8 +103,26 @@ const main = async (candidateUsername: string) => {
 
         copyFolderRecursiveSync("templates/src", "build/templates")
 
-        await executeWithGitInRepo(["add", "-A"], "templates")
-        await executeWithGitInRepo(["commit", "-m", title], "templates")
+        const addResult = await executeWithGitInRepo(["add", "-A"], "templates")
+
+        if(addResult.isError) {
+          console.log(addResult.error)
+        }
+
+        if(!addResult.isError) {
+          console.log(addResult.message)
+        }
+
+        const commitResult = await executeWithGitInRepo(["commit", "-m", title], "templates")
+
+        if(commitResult.isError) {
+          console.log(commitResult.error)
+        }
+
+        if(!commitResult.isError) {
+          console.log(commitResult.message)
+        }
+
         const pushResult = await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
 
         if(pushResult.isError) {
