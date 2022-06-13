@@ -1,9 +1,17 @@
 import { GitHubConfiguration } from "./github";
 
+export const defaultBranchEnvironmentVariable = "DEFAULT_BRANCH";
+export const organizationNameEnvironmentVariable = "ORGANIZATION_NAME";
+export const gitHubTokenEnvironmentVariable = "GITHUB_TOKEN";
+
 export const getGitHubConfiguration = (): GitHubConfiguration => ({
-  defaultBranch: getRequiredEnvironmentVariable("DEFAULT_BRANCH"),
-  organization: getRequiredEnvironmentVariable("ORGANIZATION_NAME"),
-  token: getRequiredEnvironmentVariable("GITHUB_TOKEN"),
+  defaultBranch: getRequiredEnvironmentVariable(
+    defaultBranchEnvironmentVariable
+  ),
+  organization: getRequiredEnvironmentVariable(
+    organizationNameEnvironmentVariable
+  ),
+  token: getRequiredEnvironmentVariable(gitHubTokenEnvironmentVariable),
 });
 
 const getRequiredEnvironmentVariable = (name: string): string => {

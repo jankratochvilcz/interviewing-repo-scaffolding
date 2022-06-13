@@ -6,27 +6,33 @@ export type TemplateFile = {
   content: string;
 };
 
-const templatesFolder = "/templates";
+export const localPaths = {
+  buildFolder: "/build",
+  buildSrcFolder: "/src",
+  templatesFolder: "/templates",
+  templatesSrcFolder: "/src",
+  appRoot: __dirname,
+};
+
+const templateEncoding = "utf-8";
 
 export const getTemplateFiles = (): TemplateFile[] => {
-  const rootPath = `${getCurrentModulePath()}${templatesFolder}`;
-  console.log(rootPath);
+  const rootPath = path.join(localPaths.appRoot, localPaths.templatesFolder);
+
   const files = fs.readdirSync(rootPath);
   const templateFiles = files
-    .map((x) => `${rootPath}/${x}`)
+    .map((templateFilePath) => path.join(rootPath, templateFilePath))
     .filter((x) => fs.lstatSync(x).isFile())
     .map(
       (x) =>
         ({
           name: x,
-          content: fs.readFileSync(x, "utf-8"),
+          content: fs.readFileSync(x, templateEncoding),
         } as TemplateFile)
     );
 
   return templateFiles;
 };
-
-export const getCurrentModulePath = (): string => __dirname;
 
 // Taken from https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js with minor TS and stylistic edits.
 export const copyFile = (source: string, target: string) => {

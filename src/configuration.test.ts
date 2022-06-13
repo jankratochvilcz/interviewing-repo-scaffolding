@@ -1,16 +1,21 @@
 import test from "ava";
-import { getGitHubConfiguration } from "./configuration";
+import {
+  defaultBranchEnvironmentVariable,
+  getGitHubConfiguration,
+  gitHubTokenEnvironmentVariable,
+  organizationNameEnvironmentVariable,
+} from "./configuration";
 
 test.beforeEach(() => {
-  process.env["GITHUB_TOKEN"] = "";
-  process.env["DEFAULT_BRANCH"] = "";
-  process.env["ORGANIZATION_NAME"] = "";
+  process.env[gitHubTokenEnvironmentVariable] = "";
+  process.env[defaultBranchEnvironmentVariable] = "";
+  process.env[organizationNameEnvironmentVariable] = "";
 });
 
 test("loads GitHub configuration", (t) => {
-  process.env["GITHUB_TOKEN"] = "token";
-  process.env["DEFAULT_BRANCH"] = "branch";
-  process.env["ORGANIZATION_NAME"] = "org";
+  process.env[gitHubTokenEnvironmentVariable] = "token";
+  process.env[defaultBranchEnvironmentVariable] = "branch";
+  process.env[organizationNameEnvironmentVariable] = "org";
 
   const actual = getGitHubConfiguration();
 

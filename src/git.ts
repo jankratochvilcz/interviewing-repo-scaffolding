@@ -1,5 +1,6 @@
 import { GitProcess } from "dugite";
-import { getCurrentModulePath } from "./filesystem";
+import path from "path";
+import { localPaths } from "./filesystem";
 
 export type RepositoryType = "main" | "templates";
 
@@ -12,8 +13,12 @@ export const executeWithGitInRepo = async (
   const result = await GitProcess.exec(
     args,
     repositoryType === "templates"
-      ? `${getCurrentModulePath()}/templates/src`
-      : getCurrentModulePath()
+      ? path.join(
+          localPaths.appRoot,
+          localPaths.templatesFolder,
+          localPaths.templatesSrcFolder
+        )
+      : localPaths.appRoot
   );
 
   if (result.exitCode == 0) {

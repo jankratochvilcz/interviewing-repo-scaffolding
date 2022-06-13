@@ -4,13 +4,13 @@ import {
   clearFolderRecursive,
   copyFolderRecursive,
   getTemplateFiles,
+  localPaths,
   mkdir,
 } from "./filesystem";
 import {
   createIssue,
   createPull,
   createRepo,
-  deleteRepo,
   GitHubConfiguration,
 } from "./github";
 import {
@@ -21,6 +21,7 @@ import {
 } from "./templates";
 import dotenv from "dotenv";
 import { executeWithGitInRepo } from "./git";
+import path from "path";
 
 const remoteName = "origin";
 
@@ -53,8 +54,8 @@ const createRepoWorkflow = async (candidateUsername: string) => {
   }
 
   await executeWorkflowStep("Moving source to build folder", () => {
-    mkdir("build/src");
-    copyFolderRecursive("templates", "build");
+    mkdir(path.join(localPaths.buildFolder, localPaths.buildSrcFolder));
+    copyFolderRecursive(localPaths.templatesFolder, localPaths.buildFolder);
 
     return Promise.resolve(true);
   });
@@ -111,7 +112,13 @@ const createRepoWorkflow = async (candidateUsername: string) => {
 
           console.log(`${branch} [${title}]`);
 
-          clearFolderRecursive("build/templates/src");
+          clearFolderRecursive(
+            path.join(
+              localPaths.buildFolder,
+              localPaths.templatesFolder,
+              localPaths.templatesSrcFolder
+            )
+          );
 
           await executeWithGitInRepo([
             "clone",
@@ -121,7 +128,13 @@ const createRepoWorkflow = async (candidateUsername: string) => {
           await executeWithGitInRepo(["checkout", "-b", branch], "templates");
           await executeWithGitInRepo(["checkout", branch], "main");
 
-          copyFolderRecursive("templates/src", "build/templates");
+          copyFolderRecursive(
+            path.join(
+              localPaths.templatesFolder,
+              localPaths.templatesSrcFolder
+            ),
+            path.join(localPaths.buildFolder, localPaths.templatesFolder)
+          );
 
           await executeWithGitInRepo(["add", "-A"], "templates");
           await executeWithGitInRepo(["commit", "-m", title], "templates");
