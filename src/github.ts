@@ -22,10 +22,9 @@ export const createRepo = async (
     org: configuration.organization,
     name,
     has_issues: true,
-    
   });
 
-  console.log(createdRepo)
+  console.log(createdRepo);
 
   return {
     url: createdRepo.data.ssh_url,
@@ -33,14 +32,17 @@ export const createRepo = async (
   };
 };
 
-export const deleteRepo = async (name: string, configuration: GitHubConfiguration) => {
+export const deleteRepo = async (
+  name: string,
+  configuration: GitHubConfiguration
+) => {
   const client = getClient(configuration);
 
   await client.repos.delete({
     owner: configuration.organization,
     repo: name,
   });
-}
+};
 
 export const createIssue = async (
   template: IssueTemplate,

@@ -145,19 +145,6 @@ const createRepoWorkflow = async (candidateUsername: string) => {
   console.log(`Done! See repo at ${htmlUrl}`);
 };
 
-const deleteRepoWorkflow = async (candidateUsername: string) => {
-  const configuration = await executeWorkflowStep("Getting configuration", () =>
-    Promise.resolve(getGitHubConfiguration())
-  );
-
-  await executeWorkflowStep(
-    `Deleting repository ${candidateUsername}/${configuration.organization}`,
-    async () => await deleteRepo(candidateUsername, configuration)
-  );
-
-  console.log("Done!");
-};
-
 const createIsses = async (
   templates: Template[],
   candidateUsername: string,
@@ -204,8 +191,7 @@ const showPrompt = () => {
   console.log(
     "1. [username]        Write candidate name to generate a test repo."
   );
-  console.log("2. [-D username] Delete a repo for a given candidate.");
-  console.log("3. [Enter]           Terminate tool.");
+  console.log("2. [Enter]           Terminate tool.");
   console.log();
   console.log();
 
@@ -216,11 +202,7 @@ const showPrompt = () => {
       return;
     }
 
-    if (param.startsWith("-D")) {
-      await deleteRepoWorkflow(param.slice(3));
-    } else {
-      await createRepoWorkflow(param);
-    }
+    await createRepoWorkflow(param);
 
     showPrompt();
   });
