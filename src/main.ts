@@ -114,7 +114,7 @@ const createRepoWorkflow = async (candidateUsername: string) => {
 
           await executeWithGitInRepo([
             "clone",
-            "git@github.com:jankratochvilcz/testrepo.git",
+            `git@github.com:jankratochvilcz/${candidateUsername}.git`,
             ".",
           ]);
           await executeWithGitInRepo(["checkout", "-b", branch], "templates");
