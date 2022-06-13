@@ -12,29 +12,32 @@ import { executeWithGitInRepo } from "./git";
 
 const remoteName = "origin";
 
-let stepNumber = 1
+let stepNumber = 1;
 
 const executeStep = async <TOutput>(
   name: string,
   toExecute: () => Promise<TOutput>
 ): Promise<TOutput> => {
-  const stepPrefix = `[${stepNumber}] ${name}: `
+  const stepPrefix = `[${stepNumber}] ${name}: `;
   console.log(`${stepPrefix} Started.`);
   const result = await toExecute();
   console.log(`${stepNumber} Finished.`);
   console.log();
 
-  stepNumber++
+  stepNumber++;
 
   return result;
 };
 
 const main = async (candidateUsername: string) => {
-  const diff = await executeStep("Checking local repository", async () => await executeWithGitInRepo(["diff", "HEAD"], "main"))
+  const diff = await executeStep(
+    "Checking local repository",
+    async () => await executeWithGitInRepo(["diff", "HEAD"], "main")
+  );
 
-  if(diff.isError || diff.message.length > 0) {
-    console.log('Working tree is dirty. Clean working tree and try again.')
-    return
+  if (diff.isError || diff.message.length > 0) {
+    console.log("Working tree is dirty. Clean working tree and try again.");
+    return;
   }
 
   await executeStep("Moving source to build folder", () => {
