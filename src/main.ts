@@ -98,6 +98,8 @@ const main = async (candidateUsername: string) => {
 
         clearFolderRecursive("build/templates/src")
 
+        await executeWithGitInRepo(["init"]);
+        await executeWithGitInRepo(["remote", "add", remoteName, url]);
         await executeWithGitInRepo(["checkout", "-b", branch], "templates")
         await executeWithGitInRepo(["checkout", branch], "main")
 
