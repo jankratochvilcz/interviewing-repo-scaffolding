@@ -34,7 +34,7 @@ export const createIssue = async (
   template: IssueTemplate,
   repo: string,
   configuration: GitHubConfiguration
-) => {
+): Promise<{ htmlUrl: string }> => {
   const client = getClient(configuration);
   const issue = await client.issues.create({
     owner: configuration.organization,
@@ -43,14 +43,16 @@ export const createIssue = async (
     body: template.content,
   });
 
-  return issue;
+  return {
+    htmlUrl: issue.data.html_url,
+  };
 };
 
 export const createPull = async (
   template: PullTemplate,
   repo: string,
   configuration: GitHubConfiguration
-) => {
+): Promise<{ htmlUrl: string }> => {
   const client = getClient(configuration);
   const issue = await client.pulls.create({
     owner: configuration.organization,
@@ -61,5 +63,7 @@ export const createPull = async (
     head: template.branch,
   });
 
-  return issue;
+  return {
+    htmlUrl: issue.data.html_url,
+  };
 };

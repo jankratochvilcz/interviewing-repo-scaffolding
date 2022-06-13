@@ -86,13 +86,13 @@ const main = async (candidateUsername: string) => {
     async () => await createIsses(issues, candidateUsername, configuration)
   );
 
-  const pulls = templates.filter(x => x.type === "pull_request")
+  const pulls = templates.filter(x => x.type === "pull_request").map(x => x as PullTemplate)
 
   await executeStep(
     `Pushing ${pulls.length} PR branches to origin`,
     async () => {
       for (const pull of pulls) {
-        const { branch, title } = pull as PullTemplate
+        const { branch, title } = pull
 
         console.log(`${branch} [${title}]`)
 
@@ -104,35 +104,11 @@ const main = async (candidateUsername: string) => {
 
         copyFolderRecursiveSync("templates/src", "build/templates")
 
-        const addResult = await executeWithGitInRepo(["add", "-A"], "templates")
+        await executeWithGitInRepo(["add", "-A"], "templates")
+        await executeWithGitInRepo(["commit", "-m", title], "templates")
+        await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
 
-        if(addResult.isError) {
-          console.log(addResult.error)
-        }
-
-        if(!addResult.isError) {
-          console.log(addResult.message)
-        }
-
-        const commitResult = await executeWithGitInRepo(["commit", "-m", title], "templates")
-
-        if(commitResult.isError) {
-          console.log(commitResult.error)
-        }
-
-        if(!commitResult.isError) {
-          console.log(commitResult.message)
-        }
-
-        const pushResult = await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
-
-        if(pushResult.isError) {
-          console.log(pushResult.error)
-        }
-
-        if(!pushResult.isError) {
-          console.log(pushResult.message)
-        }
+        await createPull(pull, candidateUsername, configuration)
 
         await executeWithGitInRepo(["checkout", configuration.defaultBranch], "main")
       }
