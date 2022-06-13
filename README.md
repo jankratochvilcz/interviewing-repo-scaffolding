@@ -4,6 +4,15 @@ This project generates GitHub repositories pre-filled with issues and PRs for jo
 
 Each candidate gets their repository where they collaborate with an interviewer on the completion of given tasks.
 
+## Functionality
+
+After going through the setup, you will be able to get the following by inputting candidates' GitHub usernames:
+* **Generate a new repository** in a specified organization named after the candidate
+* **Push sample code** to the repository
+* Push feature branches to the repository
+* **Generate Pull requests and Issues** based on markdown templates
+* **Automatically invite the candidate** to the repository
+
 ## How to use
 
 ### 1. Clone repository
