@@ -183,12 +183,12 @@ const createIsses = async (
 
 dotenv.config();
 
-const lineReader = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
 const showPrompt = () => {
+  const lineReader = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  
   console.log("Enter a candidate username or press Enter to terminate");
   lineReader.question("Candidate's GitHub username: ", (name) => {
     lineReader.close();
