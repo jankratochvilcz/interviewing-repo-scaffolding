@@ -19,5 +19,6 @@ export const executeWithGitInRepo = async (
   }
 
   console.log(`Git error when executing ${args.join(" ")}: vresult.stderr`)
+  
   return { error: result.stderr, isError: true };
 };

@@ -29,7 +29,7 @@ export const getTemplateFiles = (): TemplateFile[] => {
 export const getCurrentModulePath = (): string => __dirname;
 
 // Taken from https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js with minor TS and stylistic edits.
-export const copyFileSync = (source: string, target: string) => {
+export const copyFile = (source: string, target: string) => {
   let targetFile = target;
 
   // If target is a directory, a new file with the same name will be created
@@ -45,7 +45,7 @@ export const copyFileSync = (source: string, target: string) => {
 export const mkdir = (path: string) => fs.mkdirSync(path);
 
 // Taken from https://stackoverflow.com/questions/13786160/copy-folder-recursively-in-node-js with minor TS and stylistic edits.
-export const copyFolderRecursiveSync = (source: string, target: string) => {
+export const copyFolderRecursive = (source: string, target: string) => {
   let files = [];
 
   // Check if folder needs to be created or integrated
@@ -60,9 +60,9 @@ export const copyFolderRecursiveSync = (source: string, target: string) => {
     files.forEach(function (file) {
       const curSource = path.join(source, file);
       if (fs.lstatSync(curSource).isDirectory()) {
-        copyFolderRecursiveSync(curSource, targetFolder);
+        copyFolderRecursive(curSource, targetFolder);
       } else {
-        copyFileSync(curSource, targetFolder);
+        copyFile(curSource, targetFolder);
       }
     });
   }

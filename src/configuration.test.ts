@@ -1,7 +1,7 @@
 import test from "ava";
 import { getGitHubConfiguration } from "./configuration";
 
-test.beforeEach((t) => {
+test.beforeEach(() => {
   process.env["GITHUB_TOKEN"] = "";
   process.env["DEFAULT_BRANCH"] = "";
   process.env["ORGANIZATION_NAME"] = "";

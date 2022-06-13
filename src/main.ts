@@ -1,5 +1,5 @@
 import { getGitHubConfiguration } from "./configuration";
-import { clearFolderRecursive, copyFolderRecursiveSync, getTemplateFiles, mkdir } from "./filesystem";
+import { clearFolderRecursive, copyFolderRecursive, getTemplateFiles, mkdir } from "./filesystem";
 import {
   createIssue,
   createPull,
@@ -14,7 +14,7 @@ const remoteName = "origin";
 
 let stepNumber = 1;
 
-const executeStep = async <TOutput>(
+const executeWorkflowStep = async <TOutput>(
   name: string,
   toExecute: () => Promise<TOutput>
 ): Promise<TOutput> => {
@@ -30,7 +30,7 @@ const executeStep = async <TOutput>(
 };
 
 const main = async (candidateUsername: string) => {
-  const diff = await executeStep(
+  const diff = await executeWorkflowStep(
     "Checking local repository",
     async () => await executeWithGitInRepo(["diff", "HEAD"], "main")
   );
@@ -40,24 +40,24 @@ const main = async (candidateUsername: string) => {
     return;
   }
 
-  await executeStep("Moving source to build folder", () => {
+  await executeWorkflowStep("Moving source to build folder", () => {
     mkdir("build/src");
-    copyFolderRecursiveSync("templates", "build");
+    copyFolderRecursive("templates", "build");
 
     return Promise.resolve(true);
   });
 
-  const configuration = await executeStep("Getting configuration", () =>
+  const configuration = await executeWorkflowStep("Getting configuration", () =>
     Promise.resolve(getGitHubConfiguration())
   );
   const repoWithOrg = `Creating repository ${configuration.organization}/${candidateUsername}`;
 
-  const { url, htmlUrl } = await executeStep(
+  const { url, htmlUrl } = await executeWorkflowStep(
     repoWithOrg,
     async () => await createRepo(candidateUsername, configuration)
   );
 
-  await executeStep(
+  await executeWorkflowStep(
     `Pushing current branch to ${repoWithOrg}/${configuration.defaultBranch}`,
     async () => {
       await executeWithGitInRepo(["init"]);
@@ -73,7 +73,7 @@ const main = async (candidateUsername: string) => {
     }
   );
 
-  const templates = await executeStep("Loading templates", () =>
+  const templates = await executeWorkflowStep("Loading templates", () =>
     Promise.resolve(
       getTemplateFiles().map(({ content }) => parseTemplate(content))
     )
@@ -81,14 +81,14 @@ const main = async (candidateUsername: string) => {
 
   const issues = templates.filter(x => x.type === "issue")
 
-  await executeStep(
+  await executeWorkflowStep(
     `Creating ${issues.length} issues from templates`,
     async () => await createIsses(issues, candidateUsername, configuration)
   );
 
   const pulls = templates.filter(x => x.type === "pull_request").map(x => x as PullTemplate)
 
-  await executeStep(
+  await executeWorkflowStep(
     `Pushing ${pulls.length} PR branches to origin`,
     async () => {
       for (const pull of pulls) {
@@ -102,7 +102,7 @@ const main = async (candidateUsername: string) => {
         await executeWithGitInRepo(["checkout", "-b", branch], "templates")
         await executeWithGitInRepo(["checkout", branch], "main")
 
-        copyFolderRecursiveSync("templates/src", "build/templates")
+        copyFolderRecursive("templates/src", "build/templates")
 
         await executeWithGitInRepo(["add", "-A"], "templates")
         await executeWithGitInRepo(["commit", "-m", title], "templates")
