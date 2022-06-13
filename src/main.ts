@@ -209,7 +209,7 @@ const showPrompt = () => {
   console.log();
   console.log();
 
-  lineReader.question(": ", (param) => {
+  lineReader.question(": ", async (param) => {
     lineReader.close();
 
     if (!param) {
@@ -217,9 +217,9 @@ const showPrompt = () => {
     }
 
     if (param.startsWith("-D")) {
-      deleteRepoWorkflow(param.slice(3));
+      await deleteRepoWorkflow(param.slice(3));
     } else {
-      createRepoWorkflow(param);
+      await createRepoWorkflow(param);
     }
 
     showPrompt();
