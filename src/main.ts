@@ -105,7 +105,11 @@ const main = async (candidateUsername: string) => {
 
         await executeWithGitInRepo(["add", "-A"], "templates")
         await executeWithGitInRepo(["commit", "-m", title], "templates")
-        await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
+        const pushResult = await executeWithGitInRepo(["push", "-u", "origin", branch], "templates")
+
+        if(pushResult.isError) {
+          console.log(pushResult.error)
+        }
 
         await executeWithGitInRepo(["checkout", configuration.defaultBranch], "main")
       }
