@@ -52,8 +52,16 @@ Copy the `.env.example` file as `.env` and fill in individual environment variab
 
 ### 5. Run it
 
-Finally, run the tool via `npm run start -- create <GitHub username>` and follow the instructions to generate the repository and invite your candidate to it.
+Finally, run the tool. There are a couple of options available.
 
 If you haven't run it before, don't forget to `npm install`. The project assumes you have Node and NPM installed. The tested version is Node v18.3.0 and NPM v8.11.0.
+
+|Command|How to run it|Description|
+|-|-|-|
+|`create`|`npm run start -- create <GitHub username>`|Creates a test project repository for a specific user.|
+|`archive`|`npm run start -- create <GitHub username>`|Archives the test project repository for a specific user.|
+
+
+ via `npm run start -- create <GitHub username>` and follow the instructions to generate the repository and invite your candidate to it.
 
 _💡 The solution works by running commands through your local git client. If you notice the checked-out branch change while the solution is running, that's by design._
