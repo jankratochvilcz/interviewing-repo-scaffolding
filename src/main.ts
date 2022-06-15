@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { Command as Commander } from "commander";
 import createRepoCommand from "./commands/create-repo";
+import archiveRepoCommand from "./commands/archive-repo";
 import { Command, CommandContext } from "./command";
 import { getGitHubConfiguration } from "./configuration";
 
@@ -29,7 +30,7 @@ dotenv.config();
 const gitHubConfiguration = getGitHubConfiguration();
 
 const program = new Commander();
-const commands = [createRepoCommand];
+const commands = [createRepoCommand, archiveRepoCommand];
 
 program
   .name("test-project-scaffolder")

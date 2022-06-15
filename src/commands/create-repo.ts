@@ -1,6 +1,5 @@
 import path from "path";
 import { Command, CommandContext } from "../command";
-import { getGitHubConfiguration } from "../configuration";
 import {
   mkdir,
   localPaths,
@@ -22,13 +21,14 @@ import {
   Template,
   IssueTemplate,
 } from "../templates";
+import { gitHubUserNameParam } from "./shared";
 
 type CreateRepoParams = {
   username: string;
 };
 
 const execute = async (context: CommandContext<CreateRepoParams>) => {
-console.log('executing...')
+  console.log("executing...");
   const { executeStep, gitHubConfiguration, args: params } = context;
   const { username } = params;
 
@@ -49,10 +49,7 @@ console.log('executing...')
     return Promise.resolve(true);
   });
 
-  const configuration = await executeStep("Getting configuration", () =>
-    Promise.resolve(getGitHubConfiguration())
-  );
-  const repoWithOrg = `Creating repository ${configuration.organization}/${username}`;
+  const repoWithOrg = `Creating repository ${gitHubConfiguration.organization}/${username}`;
 
   const { url, htmlUrl } = await executeStep(
     repoWithOrg,
@@ -60,7 +57,7 @@ console.log('executing...')
   );
 
   await executeStep(
-    `Pushing current branch to ${repoWithOrg}/${configuration.defaultBranch}`,
+    `Pushing current branch to ${repoWithOrg}/${gitHubConfiguration.defaultBranch}`,
     async () => {
       await executeWithGitInRepo(["init"]);
       await executeWithGitInRepo(["remote", "add", defaultRemoteName, url]);
@@ -70,7 +67,7 @@ console.log('executing...')
       await executeWithGitInRepo([
         "push",
         "origin",
-        `master:${configuration.defaultBranch}`,
+        `master:${gitHubConfiguration.defaultBranch}`,
       ]);
     }
   );
@@ -85,7 +82,8 @@ console.log('executing...')
 
   await executeStep(
     `Creating ${issues.length} issues from templates`,
-    async () => await createIsses(issues, context.args.username, configuration)
+    async () =>
+      await createIsses(issues, context.args.username, gitHubConfiguration)
   );
 
   const pulls = templates
@@ -132,21 +130,22 @@ console.log('executing...')
             "templates"
           );
 
-          await createPull(pull, username, configuration);
+          await createPull(pull, username, gitHubConfiguration);
         }
       }
     );
   } finally {
     // We always want to end in main or it becomes confusing UX
     await executeWithGitInRepo(
-      ["checkout", configuration.defaultBranch],
+      ["checkout", gitHubConfiguration.defaultBranch],
       "main"
     );
   }
 
   await executeStep(
     `Inviting ${username} to repo`,
-    async () => await inviteCollaborator(username, username, configuration)
+    async () =>
+      await inviteCollaborator(username, username, gitHubConfiguration)
   );
 
   console.log(`Done! See repo at ${htmlUrl}`);
@@ -193,12 +192,7 @@ const createRepoCommand = {
   getArgs: (params) => ({
     username: params as string,
   }),
-  args: [
-    {
-      name: "GitHub username",
-      description: "The username of the test candidate.",
-    },
-  ],
+  args: [gitHubUserNameParam],
   execute,
 } as Command<CreateRepoParams>;
 

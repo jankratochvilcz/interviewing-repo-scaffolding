@@ -1,9 +1,14 @@
 import { GitHubConfiguration } from "./github";
 
+export type CommandArg = {
+  name: string;
+  description: string;
+};
+
 export type Command<TArgs> = {
   name: string;
   description: string;
-  args: { name: string; description: string }[];
+  args: CommandArg[];
   getArgs: (...args: unknown[]) => TArgs;
   execute: (context: CommandContext<TArgs>) => Promise<void>;
 };
