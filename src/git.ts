@@ -3,6 +3,7 @@ import path from "path";
 import { localPaths } from "./filesystem";
 
 export type RepositoryType = "main" | "templates";
+export const defaultRemoteName = "origin";
 
 export const executeWithGitInRepo = async (
   args: string[],

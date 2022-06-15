@@ -32,6 +32,18 @@ export const createRepo = async (
   };
 };
 
+export const archiveRepo = async (
+  name: string,
+  configuration: GitHubConfiguration
+) => {
+  const client = getClient(configuration);
+  await client.repos.update({
+    owner: configuration.organization,
+    repo: name,
+    archived: true,
+  });
+};
+
 export const inviteCollaborator = async (
   repo: string,
   username: string,
